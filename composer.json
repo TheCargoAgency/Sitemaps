@@ -1,0 +1,20 @@
+{
+    "name": "cargoagency/sitemaps",
+    "description": "Sitemap builder & site crawler",
+    "authors": [
+        {
+            "name": "Alex Rustikov",
+            "email": "arustikov@thecargoagency.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.0",
+    	"fabpot/goutte": "3.1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cargo\\Sitemap\\": "src"
+        }
+    }
+}
