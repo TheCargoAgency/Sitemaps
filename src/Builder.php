@@ -13,7 +13,7 @@ class Builder
 
     }
 
-    public function build($urls)
+    protected function build($urls)
     {
         $this->xml = new \DOMDocument('1.0', 'UTF-8');
         $this->xml->preserveWhiteSpace = false;
@@ -44,7 +44,21 @@ class Builder
             $this->xml->appendChild($urlNode);
         }
 
-        return $this->xml->saveXML();
+        return $this->xml;
+    }
+
+    public function output($urls)
+    {
+        $xml = $this->build($urls);
+
+        return $xml->saveXML();
+    }
+
+    public function save($urls, $file)
+    {
+        $xml = $this->build($urls);
+
+        return $xml->save($file);
     }
 
     public function setChangeFrequency($changeFrequency)
