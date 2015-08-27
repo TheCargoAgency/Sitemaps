@@ -62,14 +62,14 @@ class Fetcher
 
         $this->links = $this->stripUnqualifiedUrls($this->links);
         sort($this->links, SORT_STRING);
-        print_r($this->links);
+        //print_r($this->links);
 
         return $this->links;
     }
 
     public function getPageLinks($url, $requestMethod = 'GET')
     {
-        $isDebug = true;
+        $isDebug = false;
         $url = $this->formatUrl($url);
         $crawler = $this->client->request($requestMethod, $url);
         if ($crawler) {
