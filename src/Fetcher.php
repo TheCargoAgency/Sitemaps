@@ -8,6 +8,7 @@ class Fetcher
 {
     private $client = null;
     private $baseUrl = null;
+    private $exludeExtensions = [];
     private $excludeFiles = [];
     private $excludeDirs = [];
     private $links = [];
@@ -26,6 +27,11 @@ class Fetcher
     public function setMaxUrlNumber($num)
     {
         $this->maxCrawlNum = $num;
+    }
+
+    public function excludeExtensions($extensions)
+    {
+        $this->exludeExtensions = $extensions;
     }
 
     public function excludeFiles($urls)
@@ -62,7 +68,6 @@ class Fetcher
 
         $this->links = $this->stripUnqualifiedUrls($this->links);
         sort($this->links, SORT_STRING);
-        //print_r($this->links);
 
         return $this->links;
     }
@@ -109,8 +114,9 @@ class Fetcher
         $isStartsWithSubdir = !empty($startDir) && '/' !== $startDir;
         $isHaveExcludedDirs = count($this->excludeDirs) > 0;
         $isHaveExcludedFiles = count($this->excludeFiles) > 0;
+        $isHaveExcludedExtensions = count($this->exludeExtensions) > 0;
 
-        if ($isHaveExcludedFiles | $isHaveExcludedDirs | $isStartsWithSubdir) {
+        if ($isHaveExcludedFiles | $isHaveExcludedDirs | $isStartsWithSubdir | $isHaveExcludedExtensions) {
             $links = array_values($links);
             for ($key = count($links) - 1; $key >= 0; $key--) {
                 $link = $absoluteUrl = $links[$key];
@@ -130,6 +136,16 @@ class Fetcher
                     if ($isHaveExcludedDirs) {
                         foreach ($this->excludeDirs as $excludeDir) {
                             if ($this->isWithinUrl($absoluteUrl, $rootUrl.$excludeDir)) {
+                                $isUnsetUrl = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!$isUnsetUrl) {
+                    if ($isHaveExcludedExtensions) {
+                        foreach ($this->exludeExtensions as $excludeExtension) {
+                            if (strtolower($this->getFileExtension($absoluteUrl)) == strtolower($excludeExtension)) {
                                 $isUnsetUrl = true;
                                 break;
                             }
@@ -222,6 +238,15 @@ class Fetcher
         $baseUrl = static::formatUrl($baseUrl);
         $lookupUrl = static::formatUrl($lookupUrl);
         return $baseUrl === substr($lookupUrl, 0, strlen($baseUrl));
+    }
+
+    public static function getFileExtension($url)
+    {
+        $urlParts = parse_url($url);
+        if (isset($urlParts['path'])) {
+            return pathinfo($urlParts['path'], PATHINFO_EXTENSION);
+        }
+        return '';
     }
 
     public static function currentDirectory($url)
