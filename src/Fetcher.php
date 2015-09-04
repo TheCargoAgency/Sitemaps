@@ -75,21 +75,25 @@ class Fetcher
     public function getPageLinks($url, $requestMethod = 'GET')
     {
         $isDebug = false;
+        $links = [];
         $url = $this->formatUrl($url);
         $crawler = $this->client->request($requestMethod, $url);
         if ($crawler) {
-            $links = array_unique($crawler->filter('a:not([rel=nofollow])')->extract(['href']));
-            if ($isDebug) {
-                echo 'URL: '.$url."\n";
-                echo 'Preparsing: '.print_r($links, true);
+            //echo $url.': '.print_r($this->client->getResponse()->getHeaders(), true);
+            if (false !== strstr($this->client->getResponse()->getHeader('content-type'), 'text/html')) {
+                $links = array_unique($crawler->filter('a:not([rel=nofollow])')->extract(['href']));
+                if ($isDebug) {
+                    echo 'URL: '.$url."\n";
+                    echo 'Preparsing: '.print_r($links, true);
+                }
+                $links = $this->filterLinks($links, $url);
+                $links = array_values(array_unique($links));
+                if ($isDebug) {
+                    echo 'Afterparsing: '.print_r($links, true);
+                }
             }
-            $links = $this->filterLinks($links, $url);
-            $links = array_values(array_unique($links));
-            if ($isDebug) {
-                echo 'Afterparsing: '.print_r($links, true);
-            }
-            return $links;
         }
+        return $links;
     }
 
     private function filterLinks($links, $baseUrl)

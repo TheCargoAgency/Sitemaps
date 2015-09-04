@@ -52,5 +52,4 @@ public/crash-*.txt
 public/crash.txt
 resources/storage/
 
-data/uploads/**/*
-!data/uploads/**/.gitkeep
+test.php

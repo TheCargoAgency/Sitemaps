@@ -1,6 +1,7 @@
 # Sitemaps
 Sitemap builder &amp; site crawler  
   
+```php 
 // example  
 use Goutte\Client;  
 use Cargo\Sitemap\Fetcher;  
@@ -16,3 +17,4 @@ $urls = $fetcher->crawl('http://www.example.com');
   
 $builder = new Builder();  
 echo $builder->output($urls);  
+```
